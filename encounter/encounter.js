@@ -1,25 +1,56 @@
 import { areaTables } from "/areaTables.js"
 
-let encounterCount = 0
-let explorationXP = 0
-let scourgePoints = 0
-let currentEncounter = ""
-let currentArea = "erimera"
-
 window.onload = init;
 function init() {
+
+    let encounterCount = 0
+    let explorationXP = 0
+    let scourgePoints = 0
+    let currentEncounter = ""
+    let currentArea = "erimera"
+    let tpButtonPressed = false
+    let tpButtonAnswer = "Eh?"
+    let huntOngoing = false 
+    let dataStore = []
+    let inventoryTemp = []
+
     const encounterCountText = document.getElementById("EncounterCount")
     const explorationXPText = document.getElementById("ExplorationXP")
     const scourgePointsText = document.getElementById("ScourgePoints")
     const currentEncounterText = document.getElementById("CurrentEncounter")
+    const tpYesButton = document.getElementById("tpYesButton")
+    const tpNoButton = document.getElementById("tpNoButton")
+    const huntDoneButton = document.getElementById("huntDoneButton")
+
+    tpYesButton.addEventListener("click", function () {
+        console.log("is being pressed allight")
+        if (tpButtonPressed === true) {
+            return
+        }
+        tpButtonAnswer = "y"
+        console.log("yes!")
+        tpButtonPressed = true
+        actionExploreTwo()
+    })
+
+    tpNoButton.addEventListener("click", function () {
+        if (tpButtonPressed === true) {
+            return
+        }
+        tpButtonAnswer = "n"
+        console.log("no!")
+        tpButtonPressed = true
+        actionExploreTwo()
+    })
 
     //rollDice("2 d100 + 4")
     actionExplore()
 
     function actionExplore() {
+        tpButtonPressed = false
         let encNum = rollDice(areaTables[currentArea].encounters[0])
         let encoun = areaTables[currentArea].encounters[encNum]
-        encoun = "highMat"
+        encoun = "lowHunt"
         switch(encoun) {
             case "scourge":
                 console.log("the scourge is coming the scourge is coming the sc")
@@ -60,8 +91,131 @@ function init() {
                 let highMatNum = rollDice(highMat[1])
                 console.log(`obtained ${highMatNum} of ${highMatItem}`)
                 break
+            case "lowHunt":
+                console.log("lowHunt")
+                let lowHuntRoll = rollDice(areaTables[currentArea].lowHunt[0])
+                let lowHunt = areaTables[currentArea].lowHunt[lowHuntRoll]
+                let lowHuntItem = lowHunt[0]
+                console.log(lowHuntItem)
+                lowHuntItem = findObject(lowHuntItem)
+                console.log(`please work please work pl ${lowHuntItem}`)
+                let lowHuntNum = rollDice(lowHunt[1])
+                console.log(`fighting ${lowHuntNum} of ${lowHuntItem[0]}...`)
+                // there should be a function here that shows adialogue thing, then function passes something else to thing
+                dataStore[0] = "hunt"
+                dataStore[1] = lowHuntItem
+                dataStore[2] = lowHuntNum
+                console.log("ok so this is alright")
+                break
+            case "highHunt":
+                console.log("highHunt")
+                let highHuntRoll = rollDice(areaTables[currentArea].highHunt[0])
+                let highHunt = areaTables[currentArea].highHunt[highHuntRoll]
+                let highHuntItem = highHunt[0]
+                console.log(highHuntItem)
+                highHuntItem = findObject(highHuntItem)
+                console.log(`please work please work pl ${highHuntItem}`)
+                let highHuntNum = rollDice(highHunt[1])
+                console.log(`fighting ${highHuntNum} of ${highHuntItem[0]}...`)
+                // there should be a function here that shows adialogue thing, then function passes something else to thing
+                break
+
 
         }
+    }
+
+    function actionExploreTwo() {
+        if (tpButtonAnswer === "n") {
+            return
+        }
+        if (dataStore[0] === "hunt") {
+            huntOngoing = true
+        }
+        //so this is where the rest of the stuff goes but its mostly visual here
+    }
+    //spaghetti code my beloved (below)
+    function actionExploreThree() {
+        if (dataStore[0] === "hunt" && huntOngoing === true) {
+            let loot = []
+            for (let i = 0; i < dataStore[2]; i++) {
+                let tempLoot
+                for (let ii = 0; ii < 2; ii++) {
+                    if (dataStore[1][3] < RNG(100)) {
+                        tempLoot + 1;
+                    }
+                } 
+                if (tempLoot < 1) {
+                    tempLoot = 1
+                }
+                let invAdd = false
+                for (let ii = 0; ii < inventoryTemp.length; ii++) {
+                    if (inventoryTemp[ii][0] === dataStore[1][2]) {
+                        inventoryTemp[ii][1] = inventoryTemp[ii][1] + tempLoot
+                        itemAdd = true
+                        break
+                    }
+                }
+                if (itemAdd === false) {
+                    inventoryTemp.push(dataStore[1])
+                }
+                let lootAdd = false
+                for (let ii = o; ii < loot.length; ii++) {
+                    if (loot[ii][i] === dataStore[1][2]) {
+                        loot[ii][1] = loot[ii][1] + tempLoot
+                        lootAdd = true
+                    }
+                }
+                if (lootAdd === false) {
+                loot.push(dataStore[1])
+            }
+            console.log(inventoryTemp)
+            console.log(loot)
+            ///atp just display all the loot collected and whatnot
+        }
+    }
+
+    function findObject(obj) {
+        let objArr = obj.split(" ")
+        let objNum
+        let objItem
+        switch(objArr[0]) {
+            case ("pl"):
+                console.log("PL PLEASE")
+                objNum = parseInt(objArr[1])
+                console.log(objNum)
+                objItem = areaTables[currentArea].mats.pl
+                objItem = objItem[objNum]
+                return objItem
+            case ("me"):
+                console.log("ME PLEASE")
+                objNum = parseInt(objArr[1])
+                console.log(objNum)
+                objItem = areaTables[currentArea].mats.me
+                objItem = objItem[objNum]
+                return objItem
+            case ("fi"):
+                console.log("FI PLEASE")
+                objNum = parseInt(objArr[1])
+                console.log(objNum)
+                objItem = areaTables[currentArea].mats.fi
+                objItem = objItem[objNum]
+                return objItem
+            case ("ot"):
+                console.log("OT PLEASE")
+                objNum = parseInt(objArr[1])
+                console.log(objNum)
+                objItem = areaTables[currentArea].mats.ot
+                objItem = objItem[objNum]
+                return objItem
+            case ("mons"):
+                console.log("MONS PLEASE")
+                objNum = parseInt(objArr[1])
+                console.log(objNum)
+                objItem = areaTables[currentArea].mats.mons
+                objItem = objItem[objNum]
+                return objItem
+        }
+    } 
     }
 
     function rollDice(dStr) {
@@ -118,56 +272,14 @@ function init() {
                 break
                 
         }
+        if (dice[4] != null && result < dice[4]) {
+            result = dice[4]
+            console.log("minimum")
+        }
         console.log(`result of dice is ${result}`)
         return result
     }
 
-    function findObject(obj) {
-        let objArr = obj.split(" ")
-        let objNum
-        let objItem
-        switch(objArr[0]) {
-            case ("pl"):
-                console.log("PL PLEASE")
-                objNum = parseInt(objArr[1])
-                console.log(objNum)
-                objItem = areaTables[currentArea].mats.pl
-                objItem = objItem[objNum]
-                return objItem
-            case ("me"):
-                console.log("ME PLEASE")
-                objNum = parseInt(objArr[1])
-                console.log(objNum)
-                objItem = areaTables[currentArea].mats.me
-                objItem = objItem[objNum]
-                return objItem
-            case ("fi"):
-                console.log("FI PLEASE")
-                objNum = parseInt(objArr[1])
-                console.log(objNum)
-                objItem = areaTables[currentArea].mats.fi
-                objItem = objItem[objNum]
-                
-                return objItem
-            case ("ot"):
-                console.log("OT PLEASE")
-                objNum = parseInt(objArr[1])
-                console.log(objNum)
-                objItem = areaTables[currentArea].mats.ot
-                objItem = objItem[objNum]
-                return objItem
-            case ("mons"):
-                console.log("MONS PLEASE")
-                objNum = parseInt(objArr[1])
-                console.log(objNum)
-                objItem = areaTables[currentArea].mats.mons
-                objItem = objItem[objNum]
-                return objItem
-                
-            
-        }
-    } 
-    }
 
     function RNG(maxNum) {
         let num = Math.floor(Math.random() * maxNum + 1);
@@ -175,4 +287,4 @@ function init() {
         return num;
     }
 
-
+}
