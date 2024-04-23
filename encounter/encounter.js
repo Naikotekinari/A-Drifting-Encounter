@@ -42,6 +42,12 @@ function init() {
         tpButtonPressed = true
         actionExploreTwo()
     })
+    huntDoneButton.addEventListener("click", function () {
+        if (huntOngoing === false) {
+            return
+        }
+        actionExploreThree()
+    })
 
     //rollDice("2 d100 + 4")
     actionExplore()
@@ -105,6 +111,7 @@ function init() {
                 dataStore[0] = "hunt"
                 dataStore[1] = lowHuntItem
                 dataStore[2] = lowHuntNum
+                console.log(dataStore)
                 console.log("ok so this is alright")
                 break
             case "highHunt":
@@ -130,6 +137,7 @@ function init() {
         }
         if (dataStore[0] === "hunt") {
             huntOngoing = true
+            console.log("A TEST OF YOUR REFLEXES")
         }
         //so this is where the rest of the stuff goes but its mostly visual here
     }
@@ -151,28 +159,31 @@ function init() {
                 for (let ii = 0; ii < inventoryTemp.length; ii++) {
                     if (inventoryTemp[ii][0] === dataStore[1][2]) {
                         inventoryTemp[ii][1] = inventoryTemp[ii][1] + tempLoot
-                        itemAdd = true
+                        invAdd = true
                         break
                     }
                 }
-                if (itemAdd === false) {
-                    inventoryTemp.push(dataStore[1])
+                if (invAdd === false) {
+                    inventoryTemp.push(dataStore[1][0])
                 }
                 let lootAdd = false
-                for (let ii = o; ii < loot.length; ii++) {
+                for (let ii = 0; ii < loot.length; ii++) {
                     if (loot[ii][i] === dataStore[1][2]) {
                         loot[ii][1] = loot[ii][1] + tempLoot
                         lootAdd = true
                     }
                 }
                 if (lootAdd === false) {
-                loot.push(dataStore[1])
+                let arrPl = loot.length
+                loot[arrPl][0] = dataStore[1]
+                loot[arrPl][1] = 1
+                console.log(loot)
             }
-            console.log(inventoryTemp)
-            console.log(loot)
+            console.log(`inventory: ${inventoryTemp}`)
+            console.log(`loot: ${loot}`)
             ///atp just display all the loot collected and whatnot
         }
-    }
+    }}
 
     function findObject(obj) {
         let objArr = obj.split(" ")
@@ -287,4 +298,4 @@ function init() {
         return num;
     }
 
-}
+
