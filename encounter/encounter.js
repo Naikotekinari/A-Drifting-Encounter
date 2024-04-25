@@ -6,54 +6,84 @@ function init() {
     let encounterCount = 0
     let explorationXP = 0
     let scourgePoints = 0
-    let currentEncounter = ""
+    let exploreButtAvailable = true
     let currentArea = "erimera"
-    let tpButtonPressed = false
-    let tpButtonAnswer = "Eh?"
-    let huntOngoing = false 
+    let tpButtAvailable = false
+    let tpButtonYes = false
+    let rewardButtAvailable = false 
+    let exploreEndButtAvailable = false
     let dataStore = []
     let inventoryTemp = []
+    let totalLoot = []
 
     const encounterCountText = document.getElementById("EncounterCount")
     const explorationXPText = document.getElementById("ExplorationXP")
     const scourgePointsText = document.getElementById("ScourgePoints")
     const currentEncounterText = document.getElementById("CurrentEncounter")
+
+    const exploreButton = document.getElementById("exploreButton")
     const tpYesButton = document.getElementById("tpYesButton")
     const tpNoButton = document.getElementById("tpNoButton")
     const huntDoneButton = document.getElementById("huntDoneButton")
+    const exploreEndButton = document.getElementById("exploreEndButton")
+
+
+    exploreButton.addEventListener("click", function () {
+        console.log("explore button pressed")
+        if (exploreButtAvailable === true) {
+            actionExplore()
+        }
+    })
 
     tpYesButton.addEventListener("click", function () {
         console.log("is being pressed allight")
-        if (tpButtonPressed === true) {
+        if (tpButtAvailable === false) {
             return
         }
-        tpButtonAnswer = "y"
+        tpButtonYes = true
         console.log("yes!")
-        tpButtonPressed = true
+        tpButtAvailable = true
         actionExploreTwo()
     })
 
     tpNoButton.addEventListener("click", function () {
-        if (tpButtonPressed === true) {
+        if (tpButtAvailable === false) {
             return
         }
-        tpButtonAnswer = "n"
+        tpButtonYes = false
         console.log("no!")
-        tpButtonPressed = true
+        tpButtAvailable = true
         actionExploreTwo()
     })
+
     huntDoneButton.addEventListener("click", function () {
-        if (huntOngoing === false) {
+        if (rewardButtAvailable === false) {
             return
         }
         actionExploreThree()
     })
 
+    exploreEndButton.addEventListener("click", function () {
+        if (exploreEndButtAvailable === false) {
+            return
+        }
+        actionExploreEnd()
+    })
+
     //rollDice("2 d100 + 4")
-    actionExplore()
+    //actionExplore()
 
     function actionExplore() {
-        tpButtonPressed = false
+        if (exploreButtAvailable === false) {
+            console.log("cant do this atm. go do the other stuff first")
+        }
+        encounterCount = encounterCount + 1
+        if (encounterCount > 14) {
+            //do an end function. or something
+            
+        }
+        encounterCountText.innerHTML = encounterCount
+        exploreButtAvailable = false
         let encNum = rollDice(areaTables[currentArea].encounters[0])
         let encoun = areaTables[currentArea].encounters[encNum]
         encoun = "lowHunt"
@@ -113,6 +143,7 @@ function init() {
                 dataStore[2] = lowHuntNum
                 console.log(dataStore)
                 console.log("ok so this is alright")
+                tpButtAvailable = true
                 break
             case "highHunt":
                 console.log("highHunt")
@@ -132,58 +163,83 @@ function init() {
     }
 
     function actionExploreTwo() {
-        if (tpButtonAnswer === "n") {
+        if (tpButtonYes === "n") {
+            actionExploreEnd()
             return
         }
         if (dataStore[0] === "hunt") {
-            huntOngoing = true
+            rewardButtAvailable = true
             console.log("A TEST OF YOUR REFLEXES")
         }
         //so this is where the rest of the stuff goes but its mostly visual here
     }
     //spaghetti code my beloved (below)
     function actionExploreThree() {
-        if (dataStore[0] === "hunt" && huntOngoing === true) {
+        if (dataStore[0] === "hunt" && rewardButtAvailable === true) {
+            rewardButtAvailable === false
             let loot = []
+            let tempLoot = 0
             for (let i = 0; i < dataStore[2]; i++) {
-                let tempLoot
                 for (let ii = 0; ii < 2; ii++) {
                     if (dataStore[1][3] < RNG(100)) {
-                        tempLoot + 1;
+                        tempLoot = tempLoot + 1;
                     }
                 } 
                 if (tempLoot < 1) {
+                    console.log("bad rolls...")
                     tempLoot = 1
                 }
+                console.log(tempLoot)
                 let invAdd = false
                 for (let ii = 0; ii < inventoryTemp.length; ii++) {
-                    if (inventoryTemp[ii][0] === dataStore[1][2]) {
-                        inventoryTemp[ii][1] = inventoryTemp[ii][1] + tempLoot
+                    console.log(`data store: ${dataStore}`)
+                    if (inventoryTemp[ii][0] === dataStore[1][0]) {
+                        console.log("Inventory is same")
+                        console.log(`temploot is ${tempLoot}`)
+                        inventoryTemp[ii][1] = inventoryTemp[ii][1] + parseInt(tempLoot)
                         invAdd = true
                         break
                     }
                 }
                 if (invAdd === false) {
-                    inventoryTemp.push(dataStore[1][0])
+                    inventoryTemp.push([dataStore[1][0], 1])
+                    console.log("push inv " + inventoryTemp)
                 }
                 let lootAdd = false
                 for (let ii = 0; ii < loot.length; ii++) {
-                    if (loot[ii][i] === dataStore[1][2]) {
-                        loot[ii][1] = loot[ii][1] + tempLoot
+                    if (loot[ii][0] === dataStore[1][0]) {
+                        console.log("loot is same")
+                        loot[ii][1] = loot[ii][1] + parseInt(tempLoot)
                         lootAdd = true
+                        break
                     }
                 }
                 if (lootAdd === false) {
-                let arrPl = loot.length
-                loot[arrPl][0] = dataStore[1]
-                loot[arrPl][1] = 1
-                console.log(loot)
+                loot.push([dataStore[1][0], 1]) 
+                console.log("push loot " + loot)
+                
             }
             console.log(`inventory: ${inventoryTemp}`)
             console.log(`loot: ${loot}`)
+            exploreEndButtAvailable = true
             ///atp just display all the loot collected and whatnot
         }
     }}
+
+    function actionExploreEnd() {
+        console.log("explore ending...")
+        if (exploreEndButtAvailable === true) {
+            dataStore = []
+            exploreEndButtAvailable = false
+            exploreButtAvailable = true;
+            //reset all explore variables and return back to main layout
+        }
+    }
+
+    function expeditionEnd() {
+        //display all loot and take back to main page or something. idk
+        console.log("Expedition finished! go home lesbo")
+    }
 
     function findObject(obj) {
         let objArr = obj.split(" ")
