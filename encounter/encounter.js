@@ -6,13 +6,18 @@ function init() {
     let encounterCount = 0
     let explorationXP = 0
     let scourgePoints = 0
-    let exploreButtAvailable = true
+
     let currentArea = "erimera"
+
+    let exploreButtAvailable = true
     let tpButtAvailable = false
+    let continueButtonAvailable = false
     let tpButtonYes = false
     let rewardButtAvailable = false 
     let exploreEndButtAvailable = false
+
     let dataStore = []
+    // dataStore stores 0. type of action, 1. item/monster, 2. amount of item/monster, 3. if time point is used
     let inventoryTemp = []
     let totalLoot = []
 
@@ -22,6 +27,7 @@ function init() {
     const currentEncounterText = document.getElementById("CurrentEncounter")
 
     const exploreButton = document.getElementById("exploreButton")
+    const continueButton = document.getElementById("continueButton")
     const tpYesButton = document.getElementById("tpYesButton")
     const tpNoButton = document.getElementById("tpNoButton")
     const huntDoneButton = document.getElementById("huntDoneButton")
@@ -32,6 +38,13 @@ function init() {
         console.log("explore button pressed")
         if (exploreButtAvailable === true) {
             actionExplore()
+        }
+    })
+
+    continueButton.addEventListener("click", function () {
+        console.log("continue button pressed")
+        if (continueButtonAvailable === true) {
+            actionExploreThree()
         }
     })
 
@@ -141,6 +154,7 @@ function init() {
                 dataStore[0] = "hunt"
                 dataStore[1] = lowHuntItem
                 dataStore[2] = lowHuntNum
+                dataStore[3] = "tp"
                 console.log(dataStore)
                 console.log("ok so this is alright")
                 tpButtAvailable = true
@@ -175,56 +189,32 @@ function init() {
     }
     //spaghetti code my beloved (below)
     function actionExploreThree() {
-        if (dataStore[0] === "hunt" && rewardButtAvailable === true) {
+        if (rewardButtAvailable === true) {
             rewardButtAvailable === false
-            let loot = []
+            let rewardDisplay
             let tempLoot = 0
-            for (let i = 0; i < dataStore[2]; i++) {
-                for (let ii = 0; ii < 2; ii++) {
-                    if (dataStore[1][3] < RNG(100)) {
+            if (dataStore[0] === "hunt") {
+                for (let i = 0; i < dataStore[2]; i++) {
+                    for (let ii = 0; ii < 2; ii++) {
+                        if (dataStore[1][3] < RNG(100)) {
                         tempLoot = tempLoot + 1;
-                    }
+                        console.log(`temploot on the ${ii}th iteration: ${tempLoot}`)
+                            }
                 } 
-                if (tempLoot < 1) {
+                    if (tempLoot < 1) {
                     console.log("bad rolls...")
                     tempLoot = 1
-                }
-                console.log(tempLoot)
-                let invAdd = false
-                for (let ii = 0; ii < inventoryTemp.length; ii++) {
-                    console.log(`data store: ${dataStore}`)
-                    if (inventoryTemp[ii][0] === dataStore[1][0]) {
-                        console.log("Inventory is same")
-                        console.log(`temploot is ${tempLoot}`)
-                        inventoryTemp[ii][1] = inventoryTemp[ii][1] + parseInt(tempLoot)
-                        invAdd = true
-                        break
                     }
-                }
-                if (invAdd === false) {
-                    inventoryTemp.push([dataStore[1][0], 1])
-                    console.log("push inv " + inventoryTemp)
-                }
-                let lootAdd = false
-                for (let ii = 0; ii < loot.length; ii++) {
-                    if (loot[ii][0] === dataStore[1][0]) {
-                        console.log("loot is same")
-                        loot[ii][1] = loot[ii][1] + parseInt(tempLoot)
-                        lootAdd = true
-                        break
-                    }
-                }
-                if (lootAdd === false) {
-                loot.push([dataStore[1][0], 1]) 
-                console.log("push loot " + loot)
-                
-            }
-            console.log(`inventory: ${inventoryTemp}`)
-            console.log(`loot: ${loot}`)
+                console.log(`templootinrewardbutt: ${tempLoot}`)
+                rewardDisplay = invAddMons(tempLoot)
+            }}
+             
             exploreEndButtAvailable = true
+            console.log(`reward display!! ${rewardDisplay}`)
+            console.log(`but did the inventory- ${inventoryTemp}`)
             ///atp just display all the loot collected and whatnot
         }
-    }}
+    }
 
     function actionExploreEnd() {
         console.log("explore ending...")
@@ -283,8 +273,48 @@ function init() {
                 return objItem
         }
     } 
-    }
+    
 
+    function invAddMons(drops) {
+        console.log(`is this even DROPS ${drops}`)
+        let loot = []
+                let invAdd = false
+                let lootAdd = false
+                console.log("please work")
+                for (let ii = 0; ii < inventoryTemp.length; ii++) {
+                    console.log("if this doesnt show thenits not working")
+                    console.log(`loop: ${ii}`)
+                    console.log(`data store: ${dataStore}`)
+                    if (inventoryTemp[ii][0] === dataStore[1][0]) {
+                        console.log("Inventory is same")
+                        console.log(`temploot is ${drops}`)
+                        inventoryTemp[ii][1] = inventoryTemp[ii][1] + parseInt(drops)
+                        invAdd = true
+                        break
+                    }}
+                
+                if (invAdd === false) {
+                    inventoryTemp.push([dataStore[1][0], drops])
+                    console.log("push inv " + inventoryTemp)
+                }
+                
+                for (let iii = 0; iii < loot.length; iii++) {
+                    if (loot[iii][0] === dataStore[1][0]) {
+                        console.log("loot is same")
+                        loot[iii][1] = loot[iii][1] + parseInt(drops)
+                        lootAdd = true
+                        break
+                    }}
+                
+                if (lootAdd === false) {
+                loot.push([dataStore[1][0], drops]) 
+                console.log("push loot " + loot)               
+            }
+            console.log(`inventory: ${inventoryTemp}`)
+            console.log(`loot: ${loot}`)
+            return loot
+    }
+    
     function rollDice(dStr) {
         const dice = dStr.split(" ")
         console.log(dice)
@@ -354,4 +384,4 @@ function init() {
         return num;
     }
 
-
+}
