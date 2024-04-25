@@ -191,9 +191,11 @@ function init() {
     function actionExploreThree() {
         if (rewardButtAvailable === true) {
             rewardButtAvailable === false
-            let rewardDisplay
+            let rewardDisplay = []
             let tempLoot = 0
-            if (dataStore[0] === "hunt") {
+            switch (dataStore[0]) {
+
+            case "hunt":
                 for (let i = 0; i < dataStore[2]; i++) {
                     for (let ii = 0; ii < 2; ii++) {
                         if (dataStore[1][3] < RNG(100)) {
@@ -206,15 +208,18 @@ function init() {
                     tempLoot = 1
                     }
                 console.log(`templootinrewardbutt: ${tempLoot}`)
-                rewardDisplay = invAddMons(tempLoot)
-            }}
-             
+                rewardDisplay = invAdd(tempLoot)
+            }
+            case "mat":
+                rewardDisplay = invAdd(dataStore[2])
+            } 
+            
             exploreEndButtAvailable = true
             console.log(`reward display!! ${rewardDisplay}`)
             console.log(`but did the inventory- ${inventoryTemp}`)
             ///atp just display all the loot collected and whatnot
-        }
-    }
+        }}
+    
 
     function actionExploreEnd() {
         console.log("explore ending...")
@@ -275,7 +280,7 @@ function init() {
     } 
     
 
-    function invAddMons(drops) {
+    function invAdd(drops) {
         console.log(`is this even DROPS ${drops}`)
         let loot = []
                 let invAdd = false
