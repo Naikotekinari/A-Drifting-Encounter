@@ -1,0 +1,47 @@
+ .topBar {
+    position: fixed;
+    top: 0;
+    right: 15%;
+    width: 70%;
+    height: 100px;
+    border-radius: 0%;
+    border-color: aqua;
+    background-color: rgb(48, 28, 4);
+}
+
+.aexpBar {
+    width: 100%;
+    position: absolute;
+    width: 90%;
+    right: 5%;
+    top: 10%;
+}
+.aexpBar[value] {
+    width: 90%;
+}
+
+.aexpBar[value]::-webkit-progress-bar {
+    background-color: white;
+}
+
+.aexpBar[value]::-webkit-progress-value {
+    background-color: green;
+}
+
+.aexpText {
+    font-family: "bahnschrift";
+    font-weight: bold;
+    position: absolute;
+    color: green;
+    top: 22px;
+    left: 20px;
+}
+
+.aexpNum {
+    font-family: "bahnschrift";
+    font-weight: bold;
+    position: absolute;
+    color: green;
+    top: 22px;
+    left: 150px;
+}
